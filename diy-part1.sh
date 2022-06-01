@@ -13,11 +13,13 @@
 # openclash var
 OPENCLASH_DIR="openclash"
 OPENCLASH_GIT="https://github.com/vernesong/OpenClash.git"
+OPENCLASH_SRC="luci-app-openclash"
 OPENCLASH_BRANCH="dev"
 
 # aliyundrive var
 ALIYUNDRIVE_DIR="aliyundrive"
 ALIYUNDRIVE_GIT="https://github.com/messense/aliyundrive-fuse.git"
+ALIYUNDRIVE_SRC="openwrt"
 ALIYUNDRIVE_BRANCH="main"
 
 # git shallow clone
@@ -38,11 +40,11 @@ set -x
 echo "src-git helloworld https://github.com/fw876/helloworld" >>feeds.conf.default
 
 # Add aliyundrive
-shallowClone $ALIYUNDRIVE_DIR $ALIYUNDRIVE_GIT $ALIYUNDRIVE_GIT
+shallowClone $ALIYUNDRIVE_DIR $ALIYUNDRIVE_GIT $ALIYUNDRIVE_SRC $ALIYUNDRIVE_BRANCH
 echo "src-link aliyundrive /workdir/openwrt/$ALIYUNDRIVE_DIR/openwrt" >>feeds.conf.default
 
 # Add openclash
-shallowClone $OPENCLASH_DIR $OPENCLASH_GIT $OPENCLASH_BRANCH
+shallowClone $OPENCLASH_DIR $OPENCLASH_GIT $OPENCLASH_SRC $OPENCLASH_BRANCH
 mv luci-app-openclash ../package/
 cd ..
 rm -rf openclash
