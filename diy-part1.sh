@@ -41,10 +41,11 @@ echo "src-git helloworld https://github.com/fw876/helloworld" >>feeds.conf.defau
 
 # Add aliyundrive
 shallowClone $ALIYUNDRIVE_DIR $ALIYUNDRIVE_GIT $ALIYUNDRIVE_SRC $ALIYUNDRIVE_BRANCH
-echo "src-link aliyundrive /workdir/openwrt/$ALIYUNDRIVE_DIR/openwrt" >>feeds.conf.default
+echo "src-link aliyundrive /workdir/openwrt/$ALIYUNDRIVE_DIR/openwrt" >> /workdir/openwrt/feeds.conf.default
 
 # Add openclash
 shallowClone $OPENCLASH_DIR $OPENCLASH_GIT $OPENCLASH_SRC $OPENCLASH_BRANCH
-mv luci-app-openclash ../package/
+cp $OPENCLASH_DIR/$OPENCLASH_SRC /workdir/openwrt/package/
+pwd > 1
 cd ..
-rm -rf openclash
+# rm -rf openclash
