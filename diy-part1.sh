@@ -24,8 +24,8 @@ ALIYUNDRIVE_BRANCH="main"
 
 # git shallow clone
 shallowClone(){
-    mkdir $1
-    cd $1
+    mkdir -p /workdir/$1
+    cd /workdir/$1
     git init
     git remote add origin $2
     git config core.sparsecheckout true
@@ -41,11 +41,9 @@ echo "src-git helloworld https://github.com/fw876/helloworld" >>feeds.conf.defau
 
 # Add aliyundrive
 shallowClone $ALIYUNDRIVE_DIR $ALIYUNDRIVE_GIT $ALIYUNDRIVE_SRC $ALIYUNDRIVE_BRANCH
-echo "src-link aliyundrive /workdir/openwrt/$ALIYUNDRIVE_DIR/openwrt" >> /workdir/openwrt/feeds.conf.default
+echo "src-link aliyundrive /workdir/$ALIYUNDRIVE_DIR/$ALIYUNDRIVE_SRC" >> /workdir/openwrt/feeds.conf.default
 
 # Add openclash
 shallowClone $OPENCLASH_DIR $OPENCLASH_GIT $OPENCLASH_SRC $OPENCLASH_BRANCH
-cp $OPENCLASH_DIR/$OPENCLASH_SRC /workdir/openwrt/package/
-pwd > 1
-cd ..
-# rm -rf openclash
+mv /workdir/$OPENCLASH_DIR/$OPENCLASH_SRC /workdir/openwrt/package/
+rm -rf /workdir/$OPENCLASH_DIR
