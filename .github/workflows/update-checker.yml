@@ -12,15 +12,13 @@
 name: Update Checker
 
 env:
-  REPO_URL: https://github.com/immortalwrt/immortalwrt.git
-  REPO_BRANCH: openwrt-21.02
+  REPO_URL: https://github.com/friendlyarm/friendlywrt.git
+  REPO_BRANCH: master-v22.03
 
 on:
   workflow_dispatch:
   repository_dispatch:
     types: [Update Checker]
-#  schedule:
-#    - cron: 0 */18 * * *
 
 jobs:
   check:
