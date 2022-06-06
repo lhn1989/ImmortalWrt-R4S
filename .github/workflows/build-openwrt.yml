@@ -64,8 +64,7 @@ jobs:
       run: |
         mkdir friendlywrt
         cd friendlywrt
-        repo init -u https://github.com/friendlyarm/friendlywrt_manifests -b master-v2
-        2.03 -m rk3399.xml --repo-url=https://github.com/friendlyarm/repo  --no-clone-bundle
+        repo init -u https://github.com/friendlyarm/friendlywrt_manifests -b master-v22.03 -m rk3399.xml --repo-url=https://github.com/friendlyarm/repo  --no-clone-bundle
         repo sync -c  --no-clone-bundle
         ln -sf /workdir/friendlywrt $GITHUB_WORKSPACE/friendlywrt
 
