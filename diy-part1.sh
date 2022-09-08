@@ -16,12 +16,6 @@ OPENCLASH_GIT="https://github.com/vernesong/OpenClash.git"
 OPENCLASH_SRC="luci-app-openclash"
 OPENCLASH_BRANCH="dev"
 
-# aliyundrive var
-ALIYUNDRIVE_DIR="aliyundrive"
-ALIYUNDRIVE_GIT="https://github.com/messense/aliyundrive-fuse.git"
-ALIYUNDRIVE_SRC="openwrt"
-ALIYUNDRIVE_BRANCH="main"
-
 # git shallow clone
 shallowClone(){
     mkdir -p /workdir/$1
@@ -43,7 +37,3 @@ echo "src-git helloworld https://github.com/fw876/helloworld" >>feeds.conf.defau
 shallowClone $OPENCLASH_DIR $OPENCLASH_GIT $OPENCLASH_SRC $OPENCLASH_BRANCH
 mv /workdir/$OPENCLASH_DIR/$OPENCLASH_SRC /workdir/openwrt/package/
 rm -rf /workdir/$OPENCLASH_DIR
-
-# Add aliyundrive
-shallowClone $ALIYUNDRIVE_DIR $ALIYUNDRIVE_GIT $ALIYUNDRIVE_SRC $ALIYUNDRIVE_BRANCH
-echo "src-link aliyundrive /workdir/$ALIYUNDRIVE_DIR/$ALIYUNDRIVE_SRC" >> /workdir/openwrt/feeds.conf.default
