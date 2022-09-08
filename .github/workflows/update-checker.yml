@@ -12,13 +12,15 @@
 name: Update Checker
 
 env:
-  REPO_URL: https://github.com/friendlyarm/friendlywrt.git
-  REPO_BRANCH: master-v22.03
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
 
 on:
   workflow_dispatch:
   repository_dispatch:
     types: [Update Checker]
+#  schedule:
+#    - cron: 0 */18 * * *
 
 jobs:
   check:
