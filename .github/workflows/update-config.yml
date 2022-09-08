@@ -4,13 +4,14 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/friendlyarm/friendlywrt.git
-  REPO_BRANCH: master-v22.03
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   TZ: Asia/Shanghai
+  DRM_PANFROST_PATCH: 0001-DRM-PANFROST.patch
 
 jobs:
   build:
@@ -60,7 +61,7 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
-        
+
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
       env:
@@ -71,9 +72,11 @@ jobs:
       run: |
           cd openwrt
           cp .config $GITHUB_WORKSPACE
-          cd $GITHUB_WORKSPACE
           git config --global user.name 'lhn1989'
           git config --global user.email 'lhn1989@users.noreply.github.com'
+          modify=$(git status --porcelain -uno | grep target/linux/rockchip/modules.mk | awk -F' ' '{print $2}')
+          [ -n $modify ] && git commit $modify -m "DRM PANFROST" && git format-patch -1 && cp 0001-DRM-PANFROST.patch $GITHUB_WORKSPACE
+          cd $GITHUB_WORKSPACE
           [ -n "$(git status --porcelain -uno)" ] && git commit -am "Automated commit" && git push || echo 'No change'
           
     - name: Trigger build
