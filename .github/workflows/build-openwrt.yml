@@ -18,13 +18,14 @@ on:
       ssh:
         description: 'SSH connection to Actions'
         required: false
-        default: 'false'
+        type: boolean
 
 env:
-  REPO_URL: https://github.com/friendlyarm/friendlywrt.git
-  REPO_BRANCH: master-v22.03
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
+  DRM_PANFROST_PATCH: 0001-DRM-PANFROST.patch
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
@@ -54,39 +55,33 @@ jobs:
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
-        git clone https://github.com/friendlyarm/repo --depth 1
-        sudo -E cp repo/repo /usr/local/bin/
-        rm -rf repo
-        wget -O - https://raw.githubusercontent.com/friendlyarm/build-env-on-ubuntu-bionic/master/install.sh | bash
 
     - name: Clone source code
       working-directory: /workdir
       run: |
-        mkdir friendlywrt
-        cd friendlywrt
-        repo init -u https://github.com/friendlyarm/friendlywrt_manifests -b master-v22.03 -m rk3399.xml --repo-url=https://github.com/friendlyarm/repo  --no-clone-bundle
-        repo sync -c  --no-clone-bundle
-        ln -sf /workdir/friendlywrt $GITHUB_WORKSPACE/friendlywrt
+        df -hT $PWD
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Load custom feeds
       run: |
-        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF friendlywrt/friendlywrt/feeds.conf.default
+        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
-        cd friendlywrt/friendlywrt
+        cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: Update feeds
-      run: cd friendlywrt/friendlywrt && ./scripts/feeds update -a
+      run: cd openwrt && ./scripts/feeds update -a
 
     - name: Install feeds
-      run: cd friendlywrt/friendlywrt && ./scripts/feeds install -a
+      run: cd openwrt && ./scripts/feeds install -a
 
     - name: Load custom configuration
       run: |
-        [ -e files ] && mv files friendlywrt/friendlywrt/files
-        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE friendlywrt/friendlywrt/.config
+        [ -e files ] && mv files openwrt/files
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
-        cd friendlywrt/friendlywrt
+        cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
     - name: SSH connection to Actions
@@ -108,8 +103,9 @@ jobs:
     - name: Compile the firmware
       id: compile
       run: |
-        cd friendlywrt
-        ./build.sh nanopi_r4s.mk
+        cd openwrt
+        echo -e "$(nproc) thread compile"
+        make -j$(nproc) || make -j1 || make -j1 V=s
         echo "::set-output name=status::success"
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -130,8 +126,8 @@ jobs:
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
-        cd friendlywrt/out
-        ls  |grep -v *.img.gz  |xargs rm -rf
+        cd openwrt/bin/targets/*/*
+        rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
 
