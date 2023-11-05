@@ -31,7 +31,7 @@ shallowClone(){
 set -x
 
 # Add SSR
-echo "src-git helloworld https://github.com/fw876/helloworld" >>feeds.conf.default
+echo "src-git helloworld https://github.com/fw876/helloworld.git;main" >> "feeds.conf.default"
 
 # Add cussubconverter
 echo "src-git cussubconverter https://github.com/lhn1989/luci-app-cussubconverter.git" >> "feeds.conf.default"
